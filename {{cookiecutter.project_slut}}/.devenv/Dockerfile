@@ -53,6 +53,9 @@ RUN apt update -y && apt install -y --no-install-recommends \
 	curl ca-certificates git tmux openssh-client
 RUN update-ca-certificates
 
+# Install latex
+RUN apt install -y texlive-full build-essential
+
 # Replicate the host user.
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
 	&& useradd -l -s "/bin/bash" -u ${USER_ID} -g ${USER_NAME} ${USER_NAME} \
