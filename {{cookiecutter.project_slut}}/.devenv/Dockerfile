@@ -34,6 +34,12 @@ RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
 RUN update-ca-certificates
 RUN sh -c "$(curl -fsLS get.chezmoi.io)"
 
+# texlab builder
+FROM debian:{{ cookiecutter.debian_version }} AS texlab_build
+RUN apt update -y && apt install -y --no-install-recommends rustup
+RUN rustup default stable
+RUN cargo install texlab
+
 # main image
 FROM debian:{{ cookiecutter.debian_version }}
 ARG USER_ID
@@ -48,6 +54,7 @@ COPY --from=starship_build /usr/local/bin/starship /usr/local/bin/starship
 COPY --from=fzf_build /usr/local/bin/fzf /usr/local/bin/fzf
 COPY --from=zoxide_build /root/.local/bin/zoxide /usr/local/bin/zoxide
 COPY --from=chezmoi_build /bin/chezmoi /usr/local/bin/chezmoi
+COPY --from=texlab_build /root/.cargo/bin/texlab /usr/local/bin/texlab
 
 RUN apt update -y && apt install -y --no-install-recommends \
 	curl ca-certificates git tmux openssh-client
